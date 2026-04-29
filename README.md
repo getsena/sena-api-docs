@@ -67,13 +67,14 @@ El sitio se sirve desde [readme.io](https://readme.com/) en `https://docs.somoss
 
 ### Setup inicial (una sola vez, manual en readme.io UI)
 
-1. Crear el proyecto en readme.io con slug `sena-public-api-v1`
-2. Conectar custom domain `docs.somossena.com` en Project settings → Domain
-3. Crear las **Categories** que el frontmatter referencia:
-   - `getting-started` (Quickstart, Authentication)
-   - `concepts` (Conventions, Errors, Changelog)
-   - `recipes` (Sync ERP, Upload PDF, Poll status, HMAC)
-4. Hacer un primer push a `main` — el workflow sincroniza todo
+Proyecto: `sena-qkdy` (https://dash.readme.com/project/sena-qkdy). Versión: `1.0`. Custom domain `docs.somossena.com` ya configurado.
+
+Falta crear las **Categories** que el frontmatter referencia:
+- `getting-started` (Quickstart, Authentication)
+- `concepts` (Conventions, Errors, Changelog)
+- `recipes` (Sync ERP, Upload PDF, Poll status, HMAC)
+
+Después configurar el secret `README_API_KEY` en GitHub repo settings y push a `main` — el workflow sincroniza todo.
 
 ### Triggear sync manual
 

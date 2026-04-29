@@ -1,13 +1,12 @@
 name: Sync to readme.io
 
-# Sincroniza el OpenAPI spec y los Markdown guides a docs.somossena.com
-# (servido por readme.io) cuando hay cambios en main.
+# Sincroniza el OpenAPI spec y los Markdown guides al proyecto sena-qkdy
+# en readme.io (servido en docs.somossena.com) cuando hay cambios en main.
 #
 # Configuración necesaria:
 # - Secret `README_API_KEY` en repo settings (Settings → Secrets → Actions)
-# - Variable `README_OPENAPI_ID` en repo settings (Settings → Variables → Actions)
-#   con el ID del spec que readme.io asignó tras el primer import manual.
-# - Variable `README_VERSION` con la versión del proyecto (ej. "v1").
+#   con la API key de https://dash.readme.com/project/sena-qkdy/v1.0/api-key
+# - Variable opcional `README_VERSION` (default "1.0").
 
 on:
   push:
@@ -21,6 +20,9 @@ on:
 concurrency:
   group: sync-readme
   cancel-in-progress: false
+
+env:
+  README_VERSION: ${{ vars.README_VERSION || '1.0' }}
 
 jobs:
   sync-openapi:
@@ -38,8 +40,8 @@ jobs:
         run: |
           rdme openapi upload openapi/schema.json \
             --key="$RDME_API_KEY" \
-            --slug="sena-public-api-v1" \
-            --version="${{ vars.README_VERSION || 'v1' }}"
+            --slug="public-api" \
+            --version="$README_VERSION"
 
   sync-guides:
     runs-on: ubuntu-latest
@@ -57,4 +59,4 @@ jobs:
         run: |
           rdme docs upload "content/**/*.md" \
             --key="$RDME_API_KEY" \
-            --version="${{ vars.README_VERSION || 'v1' }}"
+            --version="$README_VERSION"
