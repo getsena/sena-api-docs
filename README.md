@@ -70,7 +70,7 @@ R1 backend está al 98% en `sena-api-core`. Este repo arranca con:
 ## Roadmap
 
 - [ ] Decidir hosting (Cloudflare Pages, Vercel, Static Web Apps Azure, etc.)
-- [ ] Decidir hostname (`developers.cobranzasena.cl`, `docs.cobranzasena.cl`, otro)
+- [x] Hostname elegido: `docs.somossena.com` (servido por readme.io)
 - [ ] CI: webhook desde `sena-api-core` que regenera `openapi/schema.json` al mergear `main`
 - [ ] Recipes con código testeado (Python, Node, cURL)
 - [ ] SDK references cuando existan
