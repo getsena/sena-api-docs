@@ -1,8 +1,9 @@
 ---
-title: "Conventions"
-slug: "conventions"
-category: "concepts"
-order: 1
+title: Conventions
+slug: conventions
+category:
+  uri: concepts
+position: 1
 ---
 
 # Conventions

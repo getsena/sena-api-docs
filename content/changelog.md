@@ -1,8 +1,9 @@
 ---
-title: "Changelog"
-slug: "changelog"
-category: "concepts"
-order: 3
+title: Changelog
+slug: changelog
+category:
+  uri: concepts
+position: 3
 ---
 
 # Changelog — Sena Public API

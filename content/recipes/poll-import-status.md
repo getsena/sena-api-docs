@@ -1,8 +1,9 @@
 ---
-title: "Poll import status"
-slug: "recipe-poll-import-status"
-category: "recipes"
-order: 3
+title: Poll import status
+slug: recipe-poll-import-status
+category:
+  uri: recipes
+position: 3
 ---
 
 # Recipe — Poll import status

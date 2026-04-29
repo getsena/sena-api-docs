@@ -1,8 +1,9 @@
 ---
-title: "Quickstart"
-slug: "quickstart"
-category: "getting-started"
-order: 1
+title: Quickstart
+slug: quickstart
+category:
+  uri: getting-started
+position: 1
 ---
 
 # Quickstart — tu primera factura en 5 minutos

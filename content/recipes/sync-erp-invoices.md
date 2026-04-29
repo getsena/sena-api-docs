@@ -1,8 +1,9 @@
 ---
-title: "Sync ERP invoices"
-slug: "recipe-sync-erp-invoices"
-category: "recipes"
-order: 1
+title: Sync ERP invoices
+slug: recipe-sync-erp-invoices
+category:
+  uri: recipes
+position: 1
 ---
 
 # Recipe — Sync ERP invoices

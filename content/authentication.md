@@ -1,8 +1,9 @@
 ---
-title: "Authentication"
-slug: "authentication"
-category: "getting-started"
-order: 2
+title: Authentication
+slug: authentication
+category:
+  uri: getting-started
+position: 2
 ---
 
 # Authentication
