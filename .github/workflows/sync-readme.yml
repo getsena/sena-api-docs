@@ -57,6 +57,6 @@ jobs:
         env:
           RDME_API_KEY: ${{ secrets.README_API_KEY }}
         run: |
-          rdme docs upload "content/**/*.md" \
+          rdme docs upload content/ \
             --key="$RDME_API_KEY" \
             --version="$README_VERSION"
