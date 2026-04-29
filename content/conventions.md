@@ -63,7 +63,7 @@ Content-Type: application/problem+json
 
 ```json
 {
-  "type": "https://docs.cobranzasena.cl/errors/unknown_company",
+  "type": "https://docs.somossena.com/errors/unknown_company",
   "title": "Unknown company",
   "status": 422,
   "detail": "Company 'co_ffff...' no existe en esta organización.",
