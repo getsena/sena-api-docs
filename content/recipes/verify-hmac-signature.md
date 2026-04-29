@@ -1,8 +1,9 @@
 ---
-title: "Verify HMAC signature"
-slug: "recipe-verify-hmac-signature"
-category: "recipes"
-order: 4
+title: Verify HMAC signature
+slug: recipe-verify-hmac-signature
+category:
+  uri: recipes
+position: 4
 ---
 
 # Verify HMAC signature

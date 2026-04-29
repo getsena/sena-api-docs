@@ -1,8 +1,9 @@
 ---
-title: "Upload invoice with PDF"
-slug: "recipe-upload-invoice-with-pdf"
-category: "recipes"
-order: 2
+title: Upload invoice with PDF
+slug: recipe-upload-invoice-with-pdf
+category:
+  uri: recipes
+position: 2
 ---
 
 # Recipe — Upload invoice with PDF

@@ -1,8 +1,9 @@
 ---
-title: "Error catalog"
-slug: "errors"
-category: "concepts"
-order: 2
+title: Error catalog
+slug: errors
+category:
+  uri: concepts
+position: 2
 ---
 
 # Error catalog
