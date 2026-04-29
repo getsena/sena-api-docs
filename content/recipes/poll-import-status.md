@@ -1,3 +1,10 @@
+---
+title: "Poll import status"
+slug: "recipe-poll-import-status"
+category: "recipes"
+order: 3
+---
+
 # Recipe — Poll import status
 
 **Goal**: implementar el patrón estándar de polling para batch imports async, con backoff exponencial, timeout, y manejo de errores per-item.

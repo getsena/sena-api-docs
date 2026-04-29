@@ -1,3 +1,10 @@
+---
+title: "Error catalog"
+slug: "errors"
+category: "concepts"
+order: 2
+---
+
 # Error catalog
 
 Todos los errores de la API pública siguen [RFC 7807 Problem Details](./conventions.md#errores--rfc-7807-problem-details). El campo `code` es estable: una vez publicado, su significado no cambia. Nuevos codes se agregan acá.

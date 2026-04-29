@@ -1,3 +1,10 @@
+---
+title: "Authentication"
+slug: "authentication"
+category: "getting-started"
+order: 2
+---
+
 # Authentication
 
 La Sena Public API autentica con **API keys**. No hay OAuth de usuario final. Las keys se provisionan desde el admin de Sena, una por integración.

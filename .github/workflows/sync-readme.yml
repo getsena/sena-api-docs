@@ -1,0 +1,62 @@
+name: Sync to readme.io
+
+# Sincroniza el OpenAPI spec y los Markdown guides al proyecto sena-qkdy
+# en readme.io (servido en docs.somossena.com) cuando hay cambios en main.
+#
+# Configuración necesaria:
+# - Secret `README_API_KEY` en repo settings (Settings → Secrets → Actions)
+#   con la API key de https://dash.readme.com/project/sena-qkdy/v1.0/api-key
+# - Variable opcional `README_VERSION` (default "1.0").
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "openapi/**"
+      - "content/**"
+      - ".github/workflows/sync-readme.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-readme
+  cancel-in-progress: false
+
+env:
+  README_VERSION: ${{ vars.README_VERSION || '1.0' }}
+
+jobs:
+  sync-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install rdme
+        run: npm install --global rdme@latest
+      - name: Sync OpenAPI spec
+        env:
+          RDME_API_KEY: ${{ secrets.README_API_KEY }}
+        run: |
+          rdme openapi upload openapi/schema.json \
+            --key="$RDME_API_KEY" \
+            --slug="public-api" \
+            --version="$README_VERSION"
+
+  sync-guides:
+    runs-on: ubuntu-latest
+    needs: sync-openapi
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install rdme
+        run: npm install --global rdme@latest
+      - name: Sync guides Markdown
+        env:
+          RDME_API_KEY: ${{ secrets.README_API_KEY }}
+        run: |
+          rdme docs upload "content/**/*.md" \
+            --key="$RDME_API_KEY" \
+            --version="$README_VERSION"
