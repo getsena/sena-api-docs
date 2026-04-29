@@ -37,27 +37,6 @@ El archivo `openapi/schema.json` es un **snapshot** del endpoint público de `se
 
 El script descarga `http://localhost:8001/api/public/v1/schema?format=json`, valida que no haya paths fuera del namespace público, y reemplaza `openapi/schema.json`.
 
-## Estructura
-
-```
-sena-api-docs/
-├── index.html              # Scalar + schema embebido (entrypoint del sitio)
-├── openapi/
-│   └── schema.json         # OpenAPI 3.1 — snapshot, regenerable via script
-├── content/                # Markdown que complementa la spec (recipes, guides)
-│   ├── quickstart.md       # Tu primera factura en 5 min
-│   ├── authentication.md   # API keys, modos live/test, rotación
-│   ├── conventions.md      # Stripe IDs, Idempotency-Key, errores RFC 7807, paginación
-│   ├── errors.md           # Catálogo de error codes
-│   ├── changelog.md        # Cambios del contrato público
-│   └── recipes/
-│       ├── sync-erp-invoices.md
-│       ├── upload-invoice-with-pdf.md
-│       └── poll-import-status.md
-└── scripts/
-    └── sync-schema.sh      # Refresca openapi/schema.json
-```
-
 ## Estado del proyecto
 
 R1 backend está al 98% en `sena-api-core`. Este repo arranca con:
@@ -67,10 +46,59 @@ R1 backend está al 98% en `sena-api-core`. Este repo arranca con:
 - Recipes scaffolded (Markdown)
 - Sin deploy todavía — review local, decisiones de hosting / dominio pendientes
 
-## Roadmap
+## Hosting — readme.io
 
-- [ ] Decidir hosting (Cloudflare Pages, Vercel, Static Web Apps Azure, etc.)
-- [x] Hostname elegido: `docs.somossena.com` (servido por readme.io)
-- [ ] CI: webhook desde `sena-api-core` que regenera `openapi/schema.json` al mergear `main`
-- [ ] Recipes con código testeado (Python, Node, cURL)
-- [ ] SDK references cuando existan
+El sitio se sirve desde [readme.io](https://readme.com/) en `https://docs.somossena.com/`.
+
+### Sync automático (GitHub Action)
+
+`.github/workflows/sync-readme.yml` corre en cada push a `main` y sincroniza:
+
+1. `openapi/schema.json` → API Reference de readme.io
+2. `content/**/*.md` → Guides de readme.io (cada archivo lleva frontmatter con `title`, `slug`, `category`, `order`)
+
+### Configuración (one-time, en GitHub repo settings)
+
+**Secret** → Settings → Secrets and variables → Actions → New repository secret:
+- `README_API_KEY` — API key de readme.io con permisos de write
+
+**Variable** (opcional, si la versión cambia) → Variables tab:
+- `README_VERSION` — default `v1`
+
+### Setup inicial (una sola vez, manual en readme.io UI)
+
+1. Crear el proyecto en readme.io con slug `sena-public-api-v1`
+2. Conectar custom domain `docs.somossena.com` en Project settings → Domain
+3. Crear las **Categories** que el frontmatter referencia:
+   - `getting-started` (Quickstart, Authentication)
+   - `concepts` (Conventions, Errors, Changelog)
+   - `recipes` (Sync ERP, Upload PDF, Poll status, HMAC)
+4. Hacer un primer push a `main` — el workflow sincroniza todo
+
+### Triggear sync manual
+
+Settings → Actions → "Sync to readme.io" → Run workflow
+
+## Estructura
+
+```
+sena-api-docs/
+├── .github/workflows/
+│   └── sync-readme.yml     # CI sync con readme.io
+├── index.html              # Preview local con Scalar (zero install)
+├── openapi/
+│   └── schema.json         # OpenAPI 3.1 — snapshot, regenerable via script
+├── content/                # Markdown guides (con frontmatter readme.io)
+│   ├── quickstart.md
+│   ├── authentication.md
+│   ├── conventions.md
+│   ├── errors.md
+│   ├── changelog.md
+│   └── recipes/
+│       ├── sync-erp-invoices.md
+│       ├── upload-invoice-with-pdf.md
+│       ├── poll-import-status.md
+│       └── verify-hmac-signature.md
+└── scripts/
+    └── sync-schema.sh      # Refresca openapi/schema.json desde sena-api-core local
+```

@@ -1,0 +1,60 @@
+name: Sync to readme.io
+
+# Sincroniza el OpenAPI spec y los Markdown guides a docs.somossena.com
+# (servido por readme.io) cuando hay cambios en main.
+#
+# Configuración necesaria:
+# - Secret `README_API_KEY` en repo settings (Settings → Secrets → Actions)
+# - Variable `README_OPENAPI_ID` en repo settings (Settings → Variables → Actions)
+#   con el ID del spec que readme.io asignó tras el primer import manual.
+# - Variable `README_VERSION` con la versión del proyecto (ej. "v1").
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "openapi/**"
+      - "content/**"
+      - ".github/workflows/sync-readme.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-readme
+  cancel-in-progress: false
+
+jobs:
+  sync-openapi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install rdme
+        run: npm install --global rdme@latest
+      - name: Sync OpenAPI spec
+        env:
+          RDME_API_KEY: ${{ secrets.README_API_KEY }}
+        run: |
+          rdme openapi upload openapi/schema.json \
+            --key="$RDME_API_KEY" \
+            --slug="sena-public-api-v1" \
+            --version="${{ vars.README_VERSION || 'v1' }}"
+
+  sync-guides:
+    runs-on: ubuntu-latest
+    needs: sync-openapi
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install rdme
+        run: npm install --global rdme@latest
+      - name: Sync guides Markdown
+        env:
+          RDME_API_KEY: ${{ secrets.README_API_KEY }}
+        run: |
+          rdme docs upload "content/**/*.md" \
+            --key="$RDME_API_KEY" \
+            --version="${{ vars.README_VERSION || 'v1' }}"

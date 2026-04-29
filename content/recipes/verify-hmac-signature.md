@@ -1,3 +1,10 @@
+---
+title: "Verify HMAC signature"
+slug: "recipe-verify-hmac-signature"
+category: "recipes"
+order: 4
+---
+
 # Verify HMAC signature
 
 Cada webhook que recibís de Sena viene firmado. **Siempre** verificá la firma antes de procesar el payload — sin verificar, un atacante puede falsificar requests al endpoint público de tu servicio.

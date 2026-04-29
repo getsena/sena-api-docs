@@ -1,3 +1,10 @@
+---
+title: "Sync ERP invoices"
+slug: "recipe-sync-erp-invoices"
+category: "recipes"
+order: 1
+---
+
 # Recipe — Sync ERP invoices
 
 **Goal**: cargar las facturas pendientes del último mes desde tu ERP a Sena en un solo batch async. Tipo de uso: integración inicial o sync nocturno.

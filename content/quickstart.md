@@ -1,3 +1,10 @@
+---
+title: "Quickstart"
+slug: "quickstart"
+category: "getting-started"
+order: 1
+---
+
 # Quickstart — tu primera factura en 5 minutos
 
 Esta guía cubre el camino más corto desde cero hasta tener una factura sincronizada en Sena vía la API pública.

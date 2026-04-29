@@ -1,3 +1,10 @@
+---
+title: "Changelog"
+slug: "changelog"
+category: "concepts"
+order: 3
+---
+
 # Changelog — Sena Public API
 
 Cambios al contrato público (`/api/public/v1/*`). El namespace `v1` se mantiene compatible: solo se agregan campos opcionales y endpoints. Cualquier cambio breaking pasa a `v2` con notice de 12 meses mínimo.

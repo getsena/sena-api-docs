@@ -1,3 +1,10 @@
+---
+title: "Upload invoice with PDF"
+slug: "recipe-upload-invoice-with-pdf"
+category: "recipes"
+order: 2
+---
+
 # Recipe — Upload invoice with PDF
 
 **Goal**: subir una factura a Sena junto con su PDF (DTE chileno o equivalente). Útil para clientes con facturación electrónica donde el PDF es la fuente legal del documento.
