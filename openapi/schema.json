@@ -1,0 +1,3241 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Sena Public API",
+        "version": "1.0.0",
+        "description": "API HTTP REST pública para integradores. Stripe-style IDs, idempotency, multi-tenant via API key. Sandbox separada de prod."
+    },
+    "paths": {
+        "/api/public/v1/companies": {
+            "get": {
+                "operationId": "companies_list",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedCompanyPublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "companies_create",
+                "description": "Override completo: upsert por (tax_id, country) + CompanyRelation auto-create.\n\nEl base create() asume external_id; este recurso usa key natural.",
+                "tags": [
+                    "Companies"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CompanyPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/companies/{ref}": {
+            "get": {
+                "operationId": "companies_retrieve",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CompanyPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "companies_update",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CompanyPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CompanyPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "companies_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedCompanyPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedCompanyPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedCompanyPublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CompanyPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "companies_destroy",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/contacts": {
+            "get": {
+                "operationId": "contacts_list",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Contacts"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedContactPublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "contacts_create",
+                "description": "Override: upsert por (company_relation, email|phone).\n\nNo crea Company ni CompanyRelation — falla 422 unknown_company si no existe.",
+                "tags": [
+                    "Contacts"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContactPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/contacts/{ref}": {
+            "get": {
+                "operationId": "contacts_retrieve",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Contacts"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContactPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "contacts_update",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Contacts"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContactPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "contacts_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Contacts"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedContactPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedContactPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedContactPublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ContactPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "contacts_destroy",
+                "description": "Base para los ViewSets registrados en ``/api/public/v1/``.\n\nConvenciones que asume:\n- Subclase setea ``resource_name`` (ej. ``\"invoice\"``). De ahí derivan\n  los scopes (``read:invoices`` / ``write:invoices``) y la fórmula de\n  external_id.\n- Subclase setea ``resource_name_plural`` si el plural no es trivial\n  (ej. ``\"companies\"`` en vez de ``\"companys\"``).\n- El modelo subyacente tiene ``organization`` (FK), ``external_id`` y\n  ``uuid`` para el lookup.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Contacts"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/document-types": {
+            "get": {
+                "operationId": "document_types_list",
+                "description": "``/api/public/v1/document-types`` — CRUD de tipos de documento.\n\nLos tipos de sistema (organization=None, is_system=True) son visibles\npero inmutables. Intentar PATCH/DELETE sobre ellos devuelve 422.\nLos tipos custom se crean con organization=request.organization e\nis_system=False siempre, ignorando cualquier valor enviado en el body.",
+                "parameters": [
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Qué campo usar para ordenar los resultados.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "Un término de búsqueda.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Document Types"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDocumentTypePublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "document_types_create",
+                "description": "``/api/public/v1/document-types`` — CRUD de tipos de documento.\n\nLos tipos de sistema (organization=None, is_system=True) son visibles\npero inmutables. Intentar PATCH/DELETE sobre ellos devuelve 422.\nLos tipos custom se crean con organization=request.organization e\nis_system=False siempre, ignorando cualquier valor enviado en el body.",
+                "tags": [
+                    "Document Types"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentTypePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/document-types/{ref}": {
+            "get": {
+                "operationId": "document_types_retrieve",
+                "description": "``/api/public/v1/document-types`` — CRUD de tipos de documento.\n\nLos tipos de sistema (organization=None, is_system=True) son visibles\npero inmutables. Intentar PATCH/DELETE sobre ellos devuelve 422.\nLos tipos custom se crean con organization=request.organization e\nis_system=False siempre, ignorando cualquier valor enviado en el body.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Document Types"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentTypePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "document_types_update",
+                "description": "``/api/public/v1/document-types`` — CRUD de tipos de documento.\n\nLos tipos de sistema (organization=None, is_system=True) son visibles\npero inmutables. Intentar PATCH/DELETE sobre ellos devuelve 422.\nLos tipos custom se crean con organization=request.organization e\nis_system=False siempre, ignorando cualquier valor enviado en el body.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Document Types"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentTypePublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentTypePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "document_types_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Document Types"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentTypePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentTypePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentTypePublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentTypePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "document_types_destroy",
+                "description": "``/api/public/v1/document-types`` — CRUD de tipos de documento.\n\nLos tipos de sistema (organization=None, is_system=True) son visibles\npero inmutables. Intentar PATCH/DELETE sobre ellos devuelve 422.\nLos tipos custom se crean con organization=request.organization e\nis_system=False siempre, ignorando cualquier valor enviado en el body.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Document Types"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/documents": {
+            "get": {
+                "operationId": "documents_list",
+                "description": "``/api/public/v1/documents`` — crea Documents via upload_document(trigger_handlers=False).\n\nPreserva audit (DocumentActivity) pero NO dispara handlers de categoría,\npor lo que no se auto-crean Invoice/CreditBalance desde la API pública.\ncompany_id opcional. Vínculo bidireccional con invoice_ids[].",
+                "parameters": [
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ordering",
+                        "required": false,
+                        "in": "query",
+                        "description": "Qué campo usar para ordenar los resultados.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "required": false,
+                        "in": "query",
+                        "description": "Un término de búsqueda.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Documents"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedDocumentPublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "documents_create",
+                "description": "``/api/public/v1/documents`` — crea Documents via upload_document(trigger_handlers=False).\n\nPreserva audit (DocumentActivity) pero NO dispara handlers de categoría,\npor lo que no se auto-crean Invoice/CreditBalance desde la API pública.\ncompany_id opcional. Vínculo bidireccional con invoice_ids[].",
+                "tags": [
+                    "Documents"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/documents/{ref}": {
+            "get": {
+                "operationId": "documents_retrieve",
+                "description": "``/api/public/v1/documents`` — crea Documents via upload_document(trigger_handlers=False).\n\nPreserva audit (DocumentActivity) pero NO dispara handlers de categoría,\npor lo que no se auto-crean Invoice/CreditBalance desde la API pública.\ncompany_id opcional. Vínculo bidireccional con invoice_ids[].",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Documents"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "documents_update",
+                "description": "``/api/public/v1/documents`` — crea Documents via upload_document(trigger_handlers=False).\n\nPreserva audit (DocumentActivity) pero NO dispara handlers de categoría,\npor lo que no se auto-crean Invoice/CreditBalance desde la API pública.\ncompany_id opcional. Vínculo bidireccional con invoice_ids[].",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Documents"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocumentPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "documents_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Documents"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedDocumentPublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocumentPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "documents_destroy",
+                "description": "``/api/public/v1/documents`` — crea Documents via upload_document(trigger_handlers=False).\n\nPreserva audit (DocumentActivity) pero NO dispara handlers de categoría,\npor lo que no se auto-crean Invoice/CreditBalance desde la API pública.\ncompany_id opcional. Vínculo bidireccional con invoice_ids[].",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Documents"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/health": {
+            "get": {
+                "operationId": "health_retrieve",
+                "description": "GET /api/public/v1/health — ping sin auth para uptime monitors.",
+                "tags": [
+                    "Meta"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {}
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports": {
+            "get": {
+                "operationId": "imports_retrieve",
+                "description": "GET /api/public/v1/imports — historial paginado de imports de la org.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/{import_id}": {
+            "get": {
+                "operationId": "imports_retrieve_2",
+                "description": "GET /api/public/v1/imports/{id} — status + counts del import.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "import_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/{import_id}/results": {
+            "get": {
+                "operationId": "imports_results_retrieve",
+                "description": "GET /api/public/v1/imports/{id}/results — resultados por ítem, paginados.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "import_id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/companies": {
+            "post": {
+                "operationId": "imports_companies_create",
+                "description": "Base para POST /imports/{resource}.\n\nSubclase setea ``resource_name`` (ej. \"invoice\"). Los scopes requeridos\nson ``write:imports`` + ``write:{resource}s``.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/contacts": {
+            "post": {
+                "operationId": "imports_contacts_create",
+                "description": "Base para POST /imports/{resource}.\n\nSubclase setea ``resource_name`` (ej. \"invoice\"). Los scopes requeridos\nson ``write:imports`` + ``write:{resource}s``.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/documents": {
+            "post": {
+                "operationId": "imports_documents_create",
+                "description": "POST /api/public/v1/imports/documents — multipart manifest + zip archive.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/invoices": {
+            "post": {
+                "operationId": "imports_invoices_create",
+                "description": "Base para POST /imports/{resource}.\n\nSubclase setea ``resource_name`` (ej. \"invoice\"). Los scopes requeridos\nson ``write:imports`` + ``write:{resource}s``.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/imports/transactions": {
+            "post": {
+                "operationId": "imports_transactions_create",
+                "description": "Base para POST /imports/{resource}.\n\nSubclase setea ``resource_name`` (ej. \"invoice\"). Los scopes requeridos\nson ``write:imports`` + ``write:{resource}s``.",
+                "tags": [
+                    "Imports"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/invoices": {
+            "get": {
+                "operationId": "invoices_list",
+                "description": "``/api/public/v1/invoices`` — upsert por external_id, lookup por id|uuid|external_id.",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "amount_gte",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "amount_lte",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "company_id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "currency",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "direction",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "due_date_gte",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "due_date_lte",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "external_id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedInvoicePublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "invoices_create",
+                "description": "``/api/public/v1/invoices`` — upsert por external_id, lookup por id|uuid|external_id.",
+                "tags": [
+                    "Invoices"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoicePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/invoices/{ref}": {
+            "get": {
+                "operationId": "invoices_retrieve",
+                "description": "``/api/public/v1/invoices`` — upsert por external_id, lookup por id|uuid|external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoicePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "invoices_update",
+                "description": "``/api/public/v1/invoices`` — upsert por external_id, lookup por id|uuid|external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoicePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "invoices_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedInvoicePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedInvoicePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedInvoicePublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoicePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "invoices_destroy",
+                "description": "``/api/public/v1/invoices`` — upsert por external_id, lookup por id|uuid|external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/invoices/{ref}/void": {
+            "post": {
+                "operationId": "invoices_void_create",
+                "description": "Anula una Invoice (status → cancelled). Idempotente: si ya está cancelada, 200.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Invoices"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InvoicePublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InvoicePublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/me": {
+            "get": {
+                "operationId": "me_retrieve",
+                "description": "GET /api/public/v1/me — info del ApiClient + key actual + scopes.",
+                "tags": [
+                    "Meta"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/me/audit": {
+            "get": {
+                "operationId": "me_audit_retrieve",
+                "description": "GET /api/public/v1/me/audit — audit log del propio cliente.",
+                "tags": [
+                    "Meta"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        },
+        "/api/public/v1/transactions": {
+            "get": {
+                "operationId": "transactions_list",
+                "description": "``/api/public/v1/transactions`` — strict-create por external_id.\n\nRe-POST byte-idéntico → 200 (idempotente).\nBody distinto para mismo external_id → 409 conflict_immutable_resource.\nTransaction no puede actualizarse tras crearse.",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "currency",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "required": false,
+                        "in": "query",
+                        "description": "El valor del cursor de paginación.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "date_gte",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "date_lte",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "external_id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "required": false,
+                        "in": "query",
+                        "description": "Número de resultados a devolver por página.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedTransactionPublicList"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "operationId": "transactions_create",
+                "description": "``/api/public/v1/transactions`` — strict-create por external_id.\n\nRe-POST byte-idéntico → 200 (idempotente).\nBody distinto para mismo external_id → 409 conflict_immutable_resource.\nTransaction no puede actualizarse tras crearse.",
+                "tags": [
+                    "Transactions"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/public/v1/transactions/{ref}": {
+            "get": {
+                "operationId": "transactions_retrieve",
+                "description": "``/api/public/v1/transactions`` — strict-create por external_id.\n\nRe-POST byte-idéntico → 200 (idempotente).\nBody distinto para mismo external_id → 409 conflict_immutable_resource.\nTransaction no puede actualizarse tras crearse.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "Transactions"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "put": {
+                "operationId": "transactions_update",
+                "description": "``/api/public/v1/transactions`` — strict-create por external_id.\n\nRe-POST byte-idéntico → 200 (idempotente).\nBody distinto para mismo external_id → 409 conflict_immutable_resource.\nTransaction no puede actualizarse tras crearse.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionPublicRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "transactions_partial_update",
+                "description": "PATCH selectivo. Pasa ``organization`` al serializer sin re-computar external_id.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTransactionPublicRequest"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTransactionPublicRequest"
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchedTransactionPublicRequest"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionPublic"
+                                }
+                            }
+                        },
+                        "description": ""
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "transactions_destroy",
+                "description": "``/api/public/v1/transactions`` — strict-create por external_id.\n\nRe-POST byte-idéntico → 200 (idempotente).\nBody distinto para mismo external_id → 409 conflict_immutable_resource.\nTransaction no puede actualizarse tras crearse.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ref",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[^/]+$"
+                        },
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No response body"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CategoryEnum": {
+                "enum": [
+                    "factura",
+                    "boleta",
+                    "nota_credito",
+                    "nota_debito",
+                    "contrato",
+                    "otros"
+                ],
+                "type": "string",
+                "description": "* `factura` - Factura\n* `boleta` - Boleta\n* `nota_credito` - Nota de crédito\n* `nota_debito` - Nota de débito\n* `contrato` - Contrato\n* `otros` - Otros"
+            },
+            "CompanyPublic": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "tax_id": {
+                        "type": "string",
+                        "title": "RUT / tax ID",
+                        "maxLength": 20
+                    },
+                    "legal_name": {
+                        "type": "string",
+                        "title": "Razón social",
+                        "maxLength": 255
+                    },
+                    "country": {
+                        "type": "string",
+                        "title": "País",
+                        "maxLength": 10
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "country",
+                    "created",
+                    "id",
+                    "legal_name",
+                    "modified",
+                    "tax_id"
+                ]
+            },
+            "CompanyPublicRequest": {
+                "type": "object",
+                "properties": {
+                    "tax_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "RUT / tax ID",
+                        "maxLength": 20
+                    },
+                    "legal_name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Razón social",
+                        "maxLength": 255
+                    },
+                    "country": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "País",
+                        "maxLength": 10
+                    }
+                },
+                "required": [
+                    "country",
+                    "legal_name",
+                    "tax_id"
+                ]
+            },
+            "ContactPublic": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Apellido",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email principal",
+                        "maxLength": 254
+                    },
+                    "phone": {
+                        "type": "string",
+                        "title": "Teléfono principal",
+                        "maxLength": 50
+                    },
+                    "position": {
+                        "type": "string",
+                        "title": "Cargo",
+                        "maxLength": 255
+                    },
+                    "is_primary": {
+                        "type": "boolean",
+                        "title": "Contacto principal"
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created",
+                    "id",
+                    "modified",
+                    "name"
+                ]
+            },
+            "ContactPublicRequest": {
+                "type": "object",
+                "properties": {
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Apellido",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email principal",
+                        "maxLength": 254
+                    },
+                    "phone": {
+                        "type": "string",
+                        "title": "Teléfono principal",
+                        "maxLength": 50
+                    },
+                    "position": {
+                        "type": "string",
+                        "title": "Cargo",
+                        "maxLength": 255
+                    },
+                    "is_primary": {
+                        "type": "boolean",
+                        "title": "Contacto principal"
+                    }
+                },
+                "required": [
+                    "company_id",
+                    "name"
+                ]
+            },
+            "DirectionEnum": {
+                "enum": [
+                    "receivable",
+                    "payable"
+                ],
+                "type": "string",
+                "description": "* `receivable` - Por cobrar\n* `payable` - Por pagar"
+            },
+            "DocumentPublic": {
+                "type": "object",
+                "description": "Shape público de Document.\n\nRecibe document_type_id y company_id Stripe-style, resuelve y delega en\nupload_document(trigger_handlers=False) para preservar audit sin disparar\nhandlers de categoría (auto-Invoice, auto-CreditBalance, etc.).",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "metadata": {},
+                    "status": {
+                        "type": "string",
+                        "readOnly": true,
+                        "title": "Estado"
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "created",
+                    "id",
+                    "modified",
+                    "name",
+                    "status"
+                ]
+            },
+            "DocumentPublicRequest": {
+                "type": "object",
+                "description": "Shape público de Document.\n\nRecibe document_type_id y company_id Stripe-style, resuelve y delega en\nupload_document(trigger_handlers=False) para preservar audit sin disparar\nhandlers de categoría (auto-Invoice, auto-CreditBalance, etc.).",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "document_type_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "default": ""
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "metadata": {},
+                    "invoice_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "writeOnly": true
+                    }
+                },
+                "required": [
+                    "document_type_id",
+                    "name"
+                ]
+            },
+            "DocumentTypePublic": {
+                "type": "object",
+                "description": "Shape público de DocumentType. is_system siempre False en escritura.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "code": {
+                        "type": "string",
+                        "title": "Código",
+                        "maxLength": 50
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "category": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CategoryEnum"
+                            }
+                        ],
+                        "title": "Categoría"
+                    },
+                    "metadata_schema": {
+                        "title": "Esquema de metadata",
+                        "description": "{\"campo\": {\"type\": \"string|decimal|integer|date\", \"required\": true|false}}"
+                    },
+                    "is_system": {
+                        "type": "boolean",
+                        "readOnly": true,
+                        "title": "Tipo de sistema",
+                        "description": "Los tipos de sistema no se pueden eliminar ni modificar su schema."
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "code",
+                    "created",
+                    "id",
+                    "is_system",
+                    "modified",
+                    "name"
+                ]
+            },
+            "DocumentTypePublicRequest": {
+                "type": "object",
+                "description": "Shape público de DocumentType. is_system siempre False en escritura.",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código",
+                        "maxLength": 50
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "category": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CategoryEnum"
+                            }
+                        ],
+                        "title": "Categoría"
+                    },
+                    "metadata_schema": {
+                        "title": "Esquema de metadata",
+                        "description": "{\"campo\": {\"type\": \"string|decimal|integer|date\", \"required\": true|false}}"
+                    }
+                },
+                "required": [
+                    "code",
+                    "name"
+                ]
+            },
+            "InvoicePublic": {
+                "type": "object",
+                "description": "Shape público de Invoice. Recibe company_id Stripe-style y resuelve CompanyRelation.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "invoice_number": {
+                        "type": "string",
+                        "title": "Número de factura",
+                        "maxLength": 100
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "title": "Código"
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "title": "Fecha de vencimiento"
+                    },
+                    "direction": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DirectionEnum"
+                            }
+                        ],
+                        "title": "Dirección"
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/InvoicePublicStatusEnum"
+                            }
+                        ],
+                        "readOnly": true,
+                        "title": "Estado"
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "amount",
+                    "created",
+                    "currency",
+                    "id",
+                    "invoice_number",
+                    "modified",
+                    "status"
+                ]
+            },
+            "InvoicePublicRequest": {
+                "type": "object",
+                "description": "Shape público de Invoice. Recibe company_id Stripe-style y resuelve CompanyRelation.",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "invoice_number": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Número de factura",
+                        "maxLength": 100
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código"
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "title": "Fecha de vencimiento"
+                    },
+                    "direction": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DirectionEnum"
+                            }
+                        ],
+                        "title": "Dirección"
+                    },
+                    "document_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "writeOnly": true
+                    }
+                },
+                "required": [
+                    "amount",
+                    "company_id",
+                    "currency",
+                    "invoice_number"
+                ]
+            },
+            "InvoicePublicStatusEnum": {
+                "enum": [
+                    "pending",
+                    "partial",
+                    "paid",
+                    "written_off",
+                    "cancelled"
+                ],
+                "type": "string",
+                "description": "* `pending` - Pendiente\n* `partial` - Parcialmente pagada\n* `paid` - Pagada\n* `written_off` - Castigada\n* `cancelled` - Anulada"
+            },
+            "PaginatedCompanyPublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CompanyPublic"
+                        }
+                    }
+                }
+            },
+            "PaginatedContactPublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ContactPublic"
+                        }
+                    }
+                }
+            },
+            "PaginatedDocumentPublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DocumentPublic"
+                        }
+                    }
+                }
+            },
+            "PaginatedDocumentTypePublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DocumentTypePublic"
+                        }
+                    }
+                }
+            },
+            "PaginatedInvoicePublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/InvoicePublic"
+                        }
+                    }
+                }
+            },
+            "PaginatedTransactionPublicList": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "next": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cD00ODY%3D\""
+                    },
+                    "previous": {
+                        "type": "string",
+                        "nullable": true,
+                        "format": "uri",
+                        "example": "http://api.example.org/accounts/?cursor=cj0xJnA9NDg3"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransactionPublic"
+                        }
+                    }
+                }
+            },
+            "PatchedCompanyPublicRequest": {
+                "type": "object",
+                "properties": {
+                    "tax_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "RUT / tax ID",
+                        "maxLength": 20
+                    },
+                    "legal_name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Razón social",
+                        "maxLength": 255
+                    },
+                    "country": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "País",
+                        "maxLength": 10
+                    }
+                }
+            },
+            "PatchedContactPublicRequest": {
+                "type": "object",
+                "properties": {
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Apellido",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email principal",
+                        "maxLength": 254
+                    },
+                    "phone": {
+                        "type": "string",
+                        "title": "Teléfono principal",
+                        "maxLength": 50
+                    },
+                    "position": {
+                        "type": "string",
+                        "title": "Cargo",
+                        "maxLength": 255
+                    },
+                    "is_primary": {
+                        "type": "boolean",
+                        "title": "Contacto principal"
+                    }
+                }
+            },
+            "PatchedDocumentPublicRequest": {
+                "type": "object",
+                "description": "Shape público de Document.\n\nRecibe document_type_id y company_id Stripe-style, resuelve y delega en\nupload_document(trigger_handlers=False) para preservar audit sin disparar\nhandlers de categoría (auto-Invoice, auto-CreditBalance, etc.).",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "document_type_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "default": ""
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "metadata": {},
+                    "invoice_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "writeOnly": true
+                    }
+                }
+            },
+            "PatchedDocumentTypePublicRequest": {
+                "type": "object",
+                "description": "Shape público de DocumentType. is_system siempre False en escritura.",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código",
+                        "maxLength": 50
+                    },
+                    "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Nombre",
+                        "maxLength": 255
+                    },
+                    "category": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/CategoryEnum"
+                            }
+                        ],
+                        "title": "Categoría"
+                    },
+                    "metadata_schema": {
+                        "title": "Esquema de metadata",
+                        "description": "{\"campo\": {\"type\": \"string|decimal|integer|date\", \"required\": true|false}}"
+                    }
+                }
+            },
+            "PatchedInvoicePublicRequest": {
+                "type": "object",
+                "description": "Shape público de Invoice. Recibe company_id Stripe-style y resuelve CompanyRelation.",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "company_id": {
+                        "type": "string",
+                        "writeOnly": true,
+                        "minLength": 1
+                    },
+                    "invoice_number": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Número de factura",
+                        "maxLength": 100
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código"
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "title": "Fecha de vencimiento"
+                    },
+                    "direction": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DirectionEnum"
+                            }
+                        ],
+                        "title": "Dirección"
+                    },
+                    "document_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "writeOnly": true
+                    }
+                }
+            },
+            "PatchedTransactionPublicRequest": {
+                "type": "object",
+                "description": "Shape público de Transaction. Strict-create — inmutable tras crearse.",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "reference": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Referencia",
+                        "maxLength": 255
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "title": "Fecha"
+                    },
+                    "payer_name": {
+                        "type": "string",
+                        "title": "Nombre pagador",
+                        "maxLength": 255
+                    },
+                    "payer_tax_id": {
+                        "type": "string",
+                        "title": "RUT pagador",
+                        "maxLength": 20
+                    },
+                    "source": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SourceEnum"
+                            }
+                        ],
+                        "title": "Fuente"
+                    }
+                }
+            },
+            "SourceEnum": {
+                "enum": [
+                    "bank_statement",
+                    "payment_portal",
+                    "manual",
+                    "api"
+                ],
+                "type": "string",
+                "description": "* `bank_statement` - Cartola bancaria\n* `payment_portal` - Portal de pagos\n* `manual` - Manual\n* `api` - API"
+            },
+            "TransactionPublic": {
+                "type": "object",
+                "description": "Shape público de Transaction. Strict-create — inmutable tras crearse.",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "readOnly": true
+                    },
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "reference": {
+                        "type": "string",
+                        "title": "Referencia",
+                        "maxLength": 255
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "title": "Código"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "title": "Fecha"
+                    },
+                    "payer_name": {
+                        "type": "string",
+                        "title": "Nombre pagador",
+                        "maxLength": 255
+                    },
+                    "payer_tax_id": {
+                        "type": "string",
+                        "title": "RUT pagador",
+                        "maxLength": 20
+                    },
+                    "source": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SourceEnum"
+                            }
+                        ],
+                        "title": "Fuente"
+                    },
+                    "status": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TransactionPublicStatusEnum"
+                            }
+                        ],
+                        "readOnly": true,
+                        "title": "Estado"
+                    },
+                    "created": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "modified": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "required": [
+                    "amount",
+                    "created",
+                    "currency",
+                    "date",
+                    "id",
+                    "modified",
+                    "reference",
+                    "status"
+                ]
+            },
+            "TransactionPublicRequest": {
+                "type": "object",
+                "description": "Shape público de Transaction. Strict-create — inmutable tras crearse.",
+                "properties": {
+                    "external_id": {
+                        "type": "string",
+                        "title": "ID externo",
+                        "maxLength": 200
+                    },
+                    "reference": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Referencia",
+                        "maxLength": 255
+                    },
+                    "amount": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,2})?$",
+                        "title": "Monto"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "minLength": 1,
+                        "title": "Código"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "title": "Fecha"
+                    },
+                    "payer_name": {
+                        "type": "string",
+                        "title": "Nombre pagador",
+                        "maxLength": 255
+                    },
+                    "payer_tax_id": {
+                        "type": "string",
+                        "title": "RUT pagador",
+                        "maxLength": 20
+                    },
+                    "source": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SourceEnum"
+                            }
+                        ],
+                        "title": "Fuente"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "currency",
+                    "date",
+                    "reference"
+                ]
+            },
+            "TransactionPublicStatusEnum": {
+                "enum": [
+                    "unmatched",
+                    "partial",
+                    "matched"
+                ],
+                "type": "string",
+                "description": "* `unmatched` - Sin conciliar\n* `partial` - Parcialmente conciliada\n* `matched` - Conciliada"
+            }
+        },
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Sena-API-Key",
+                "description": "API key como header dedicado (compat)."
+            },
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "sk_<mode>_<token>",
+                "description": "API key como Bearer token (recomendado)."
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api.cobranzasena.cl",
+            "description": "Producción"
+        },
+        {
+            "url": "https://sandbox.cobranzasena.cl",
+            "description": "Sandbox"
+        }
+    ]
+}
